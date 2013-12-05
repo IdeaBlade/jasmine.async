@@ -40,49 +40,64 @@ a dontation or a tip to show your support.
 ```js
 describe("an async spec", function(){
 
-  // set up the async spec
+  /*** set up the async spec ***/
   var async = new AsyncSpec(this);
 
-  // run an async setup
-  async.beforeEach(function(done){
-    doSomething();
+  /*** run an async setup ***/
+  var setup = function(done){
+      doSomething();
 
-    // simulate async stuff and wait 10ms
-    setTimeout(function(){
+      // simulate async stuff and wait 10ms
+      setTimeout(function(){
 
-      // more code here
-      doMoreStuff();
- 
-      // when the async stuff is done, call `done()`
-      done();
+        // more code here
+        doMoreStuff();
 
-    }, 10); 
-  });
+        // when the async stuff is done, call `done()`
+        done();
 
-  // run an async cleanup
-  async.afterEach(function(done){
-    // simulate async cleanup
-    setTimeout(function(){
+      }, 10);
+    }
 
-      done(); // done with the async stuff
+  async.beforeEach(setup);
 
-    }, 10);
-  });
+  // run an async cleanup again but with timeout
+  async.beforeEach(setup, "setup timed out", 15);
 
-  // run an async expectation
-  async.it("did stuff", function(done){
+  /*** run an async cleanup ***/
+  var cleanup = function(done){
+     // simulate async cleanup
+     setTimeout(function(){
 
-    // simulate async code again
-    setTimeout(function(){
+       done(); // done with the async stuff
 
-      expect(1).toBe(1);
-      
-      // all async stuff done, and spec asserted
-      done();
+     }, 10);
+ );
+  async.afterEach(cleanup};
 
-    });    
+  // run an async cleanup again but with timeout
+  async.afterEach(cleanup, "cleanup timed out", 15);
 
-  });
+
+  /*** run an async expectation ***/
+  var someSpec = function(done){
+     // simulate async code again
+     setTimeout(function(){
+       expect(1).toBe(1);
+
+       // all async stuff done, and spec asserted
+       done();
+     });
+
+   });
+
+  async.it("did stuff", someSpec);
+
+  // run an async expectation again but with timeout
+  async.it("did stuff again", someSpec, "spec timed out", 5);
+
+  // do not run an async expectation
+  async.xit("is not run", someSpec);
 
 });
 ```
