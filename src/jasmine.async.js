@@ -1,4 +1,4 @@
-// Jasmine.Async, v0.2.0
+// Jasmine.Async, v0.3.0
 // Copyright (c)2012 Muted Solutions, LLC. All Rights Reserved.
 // Distributed under MIT license
 // http://github.com/derickbailey/jasmine.async
@@ -7,13 +7,14 @@ this.AsyncSpec = (function(global){
     // Private Methods
     // ---------------
 
-    function runAsync(block, optionalTimeoutMessage, optionalTimeout) {
+    function runAsync( block, optionalTimeoutMessage, optionalTimeout) {
         return function(){
+            var self = this;
             var done = false;
             var complete = function(){ done = true; };
 
             runs(function(){
-                block(complete);
+                block.call(self, complete);
             });
 
             waitsFor(function(){
